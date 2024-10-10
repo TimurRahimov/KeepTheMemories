@@ -6,11 +6,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-import ru.keepthememories.api.requests.AddPersonRequest;
-import ru.keepthememories.api.requests.GetPersonRequest;
-import ru.keepthememories.api.requests.UpdatePersonRequest;
-import ru.keepthememories.api.responses.AddPersonResponse;
-import ru.keepthememories.api.responses.GetPersonResponse;
+import ru.keepthememories.api.requests.*;
+import ru.keepthememories.api.responses.*;
 import ru.keepthememories.domain.models.Person;
 import ru.keepthememories.services.PersonService;
 
@@ -48,6 +45,12 @@ public class PersonController {
                 limit.isEmpty() ? personService.getAll() :
                         offset.isEmpty() ? personService.get(limit.get(), 0L) :
                                 personService.get(limit.get(), offset.get()));
+    }
+
+    @DeleteMapping
+    public void delete(DeletePersonRequest request) {
+        Integer personId = request.personId();
+        personService.delete(personId);
     }
 
     @PutMapping

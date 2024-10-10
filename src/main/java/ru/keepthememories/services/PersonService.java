@@ -40,6 +40,10 @@ public class PersonService {
         return repository.getAll();
     }
 
+    public void delete(Integer personId) {
+        repository.delete(personId);
+    }
+
     public void update(Integer personId, Person person) {
         repository.update(personId, person);
     }

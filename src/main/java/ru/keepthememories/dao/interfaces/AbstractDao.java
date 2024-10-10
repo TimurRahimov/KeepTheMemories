@@ -10,7 +10,6 @@ public interface AbstractDao<T> {
     @SuppressWarnings("unused")
     void add(List<T> list);
 
-    @SuppressWarnings("unused")
     void delete(Integer id);
 
     /**
