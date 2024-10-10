@@ -11,7 +11,7 @@ public interface AbstractPersonRepository {
 
     Optional<Person> get(Integer personId);
 
-    List<Person> get(Long count);
+    List<Person> get(Long limit, Long offset);
 
     List<Person> getAll();
 

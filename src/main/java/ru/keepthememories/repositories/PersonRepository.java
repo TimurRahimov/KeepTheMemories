@@ -7,6 +7,7 @@ import ru.keepthememories.domain.models.Person;
 import ru.keepthememories.repositories.interfaces.AbstractPersonRepository;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class PersonRepository implements AbstractPersonRepository {
     @Override
     synchronized public Integer add(Person item) {
         try (PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO Person (Surname, Name, Patronymic) VALUES (?, ?, ?)",
+                "INSERT INTO Person (surname, name, patronymic) VALUES (?, ?, ?)",
                 Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, item.getSurname());
             statement.setString(2, item.getName());
@@ -43,15 +44,15 @@ public class PersonRepository implements AbstractPersonRepository {
     @Override
     public Optional<Person> get(Integer personId) {
         try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM Person WHERE Id = ?")) {
+                "SELECT * FROM Person WHERE id = ?")) {
             statement.setInt(1, personId);
             ResultSet resultSet = statement.executeQuery();
             Person.Builder personBuilder = Person.getBuilder();
             if (resultSet.next()) {
-                personBuilder.setPersonId(resultSet.getInt("Id"))
-                        .setSurname(resultSet.getString("Surname"))
-                        .setName(resultSet.getString("Name"))
-                        .setPatronymic(resultSet.getString("Patronymic"));
+                personBuilder.setPersonId(resultSet.getInt("id"))
+                        .setSurname(resultSet.getString("surname"))
+                        .setName(resultSet.getString("name"))
+                        .setPatronymic(resultSet.getString("patronymic"));
                 return Optional.ofNullable(personBuilder.build());
             }
         } catch (SQLException e) {
@@ -61,8 +62,27 @@ public class PersonRepository implements AbstractPersonRepository {
     }
 
     @Override
-    public List<Person> get(Long count) {
-        return List.of();
+    public List<Person> get(Long limit, Long offset) {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM Person " +
+                        "ORDER BY id " +
+                        "LIMIT ? OFFSET ?")) {
+            statement.setLong(1, limit);
+            statement.setLong(2, offset);
+            ResultSet resultSet = statement.executeQuery();
+            List<Person> resultList = new ArrayList<>();
+            while (resultSet.next()) {
+                Person.Builder personBuilder = Person.getBuilder();
+                personBuilder.setPersonId(resultSet.getInt("id"))
+                        .setSurname(resultSet.getString("surname"))
+                        .setName(resultSet.getString("name"))
+                        .setPatronymic(resultSet.getString("patronymic"));
+                resultList.add(personBuilder.build());
+            }
+            return resultList;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -73,10 +93,10 @@ public class PersonRepository implements AbstractPersonRepository {
     private void createTable() {
         try (Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE IF NOT EXISTS Person (" +
-                    "Id INTEGER PRIMARY KEY," +
-                    "Surname TEXT, " +
-                    "Name TEXT, " +
-                    "Patronymic TEXT" +
+                    "id INTEGER PRIMARY KEY," +
+                    "surname TEXT, " +
+                    "name TEXT, " +
+                    "patronymic TEXT" +
                     ")");
         } catch (SQLException e) {
             throw new RuntimeException(e);

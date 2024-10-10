@@ -27,8 +27,8 @@ public class PersonService {
         return personBuilder.setPersonId(personId).build();
     }
 
-    public List<Person> get(Long count) {
-        return repository.get(count);
+    public List<Person> get(Long limit, Long offset) {
+        return repository.get(limit, offset);
     }
 
     public List<Person> get(Integer personId) {

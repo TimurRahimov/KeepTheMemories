@@ -13,6 +13,7 @@ public class PersonRepositoryStub implements AbstractPersonRepository {
     private final List<Person> list = new ArrayList<>();
     private Integer indexCount = 1;
 
+    @Override
     synchronized public Integer add(Person item) {
         Person.Builder builder = Person.getBuilder();
         builder.copyPerson(item)
@@ -21,14 +22,17 @@ public class PersonRepositoryStub implements AbstractPersonRepository {
         return indexCount++;
     }
 
+    @Override
     public Optional<Person> get(Integer personId) {
         return list.stream().filter(person -> person.getPersonId().equals(personId)).findFirst();
     }
 
-    public List<Person> get(Long count) {
-        return list.stream().limit(count).toList();
+    @Override
+    public List<Person> get(Long limit, Long offset) {
+        return List.of();
     }
 
+    @Override
     public List<Person> getAll() {
         return list;
     }

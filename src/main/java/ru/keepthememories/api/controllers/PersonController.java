@@ -39,11 +39,14 @@ public class PersonController {
 
     @GetMapping
     public GetPersonResponse get(GetPersonRequest request) {
-        Optional<Long> count = request.count();
+        Optional<Long> limit = request.limit();
+        Optional<Long> offset = request.offset();
         Optional<Integer> personId = request.personId();
 
         return new GetPersonResponse(personId.isPresent() ? personService.get(personId.get()) :
-                count.isEmpty() ? personService.getAll() : personService.get(count.get()));
+                limit.isEmpty() ? personService.getAll() :
+                        offset.isEmpty() ? personService.get(limit.get(), 0L) :
+                                personService.get(limit.get(), offset.get()));
     }
 
 }
