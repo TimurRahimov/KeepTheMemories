@@ -4,5 +4,5 @@ import ru.keepthememories.domain.models.Person;
 
 import java.util.List;
 
-public record GetPersonResponse(List<Person> list) {
+public record GetPersonResponse(List<Person> persons) {
 }

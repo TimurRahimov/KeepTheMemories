@@ -87,7 +87,22 @@ public class PersonRepository implements AbstractPersonRepository {
 
     @Override
     public List<Person> getAll() {
-        return List.of();
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM Person")) {
+            ResultSet resultSet = statement.executeQuery();
+            List<Person> resultList = new ArrayList<>();
+            while (resultSet.next()) {
+                Person.Builder personBuilder = Person.getBuilder();
+                personBuilder.setPersonId(resultSet.getInt("id"))
+                        .setSurname(resultSet.getString("surname"))
+                        .setName(resultSet.getString("name"))
+                        .setPatronymic(resultSet.getString("patronymic"));
+                resultList.add(personBuilder.build());
+            }
+            return resultList;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void createTable() {
