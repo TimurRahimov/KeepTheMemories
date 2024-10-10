@@ -1,24 +1,22 @@
-package ru.keepthememories.repositories;
+package ru.keepthememories.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.keepthememories.domain.models.Person;
-import ru.keepthememories.repositories.interfaces.AbstractPersonRepository;
+import ru.keepthememories.dao.interfaces.AbstractDao;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
-public class PersonRepository implements AbstractPersonRepository {
+public class PersonDao implements AbstractDao<Person> {
 
     private final Connection connection;
     @SuppressWarnings("unused")
-    private final Logger logger = LoggerFactory.getLogger(PersonRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(PersonDao.class);
 
-    PersonRepository() throws ClassNotFoundException, SQLException {
+    PersonDao() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         connection = DriverManager.getConnection("jdbc:sqlite:test.db");
         createTable();
@@ -26,12 +24,19 @@ public class PersonRepository implements AbstractPersonRepository {
 
     @Override
     synchronized public Integer add(Person item) {
-        try (PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO Person (surname, name, patronymic) VALUES (?, ?, ?)",
-                Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, item.getSurname());
-            statement.setString(2, item.getName());
-            statement.setString(3, item.getPatronymic());
+        String sql = "INSERT INTO Person (surname, name, patronymic) VALUES (?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setNull(1, Types.VARCHAR);
+            statement.setNull(2, Types.VARCHAR);
+            statement.setNull(3, Types.VARCHAR);
+
+            if (item.getSurname().isPresent())
+                statement.setString(1, item.getSurname().get());
+            if (item.getName().isPresent())
+                statement.setString(2, item.getName().get());
+            if (item.getPatronymic().isPresent())
+                statement.setString(3, item.getPatronymic().get());
+
             statement.execute();
             ResultSet generatedKeys = statement.getGeneratedKeys();
             generatedKeys.next();
@@ -42,10 +47,80 @@ public class PersonRepository implements AbstractPersonRepository {
     }
 
     @Override
-    public Optional<Person> get(Integer personId) {
+    public void add(List<Person> list) {
+        list.forEach(this::add);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "DELETE FROM Person WHERE id = ?")) {
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void update(Integer id, Person item) {
+        String sql = "UPDATE Person " +
+                "SET " +
+                "surname = IFNULL(?, surname), " +
+                "name = IFNULL(?, name), " +
+                "patronymic = IFNULL(?, patronymic) " +
+                "WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setNull(1, Types.VARCHAR);
+            statement.setNull(2, Types.VARCHAR);
+            statement.setNull(3, Types.VARCHAR);
+            statement.setInt(4, id);
+
+            if (item.getSurname().isPresent())
+                statement.setString(1, item.getSurname().get());
+            if (item.getName().isPresent())
+                statement.setString(2, item.getName().get());
+            if (item.getPatronymic().isPresent())
+                statement.setString(3, item.getPatronymic().get());
+
+            statement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void fullUpdate(Integer id, Person item) {
+        String sql = "UPDATE Person " +
+                "SET " +
+                "surname = ?, " +
+                "name = ?, " +
+                "patronymic = ? " +
+                "WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setNull(1, Types.VARCHAR);
+            statement.setNull(2, Types.VARCHAR);
+            statement.setNull(3, Types.VARCHAR);
+            statement.setInt(4, id);
+
+            if (item.getSurname().isPresent())
+                statement.setString(1, item.getSurname().get());
+            if (item.getName().isPresent())
+                statement.setString(2, item.getName().get());
+            if (item.getPatronymic().isPresent())
+                statement.setString(3, item.getPatronymic().get());
+
+            statement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<Person> getById(Integer id) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM Person WHERE id = ?")) {
-            statement.setInt(1, personId);
+            statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             Person.Builder personBuilder = Person.getBuilder();
             if (resultSet.next()) {
@@ -62,7 +137,7 @@ public class PersonRepository implements AbstractPersonRepository {
     }
 
     @Override
-    public List<Person> get(Long limit, Long offset) {
+    public List<Person> getRange(Long limit, Long offset) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM Person " +
                         "ORDER BY id " +

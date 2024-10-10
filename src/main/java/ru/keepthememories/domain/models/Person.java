@@ -1,29 +1,19 @@
 package ru.keepthememories.domain.models;
 
+import lombok.Getter;
+
+import java.util.Optional;
+
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@Getter
 public class Person {
 
     private Integer personId;
-    private String surname;
-    private String name;
-    private String patronymic;
+    private Optional<String> surname = Optional.empty();
+    private Optional<String> name = Optional.empty();
+    private Optional<String> patronymic = Optional.empty();
 
     private Person() {
-    }
-
-    public Integer getPersonId() {
-        return personId;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
     }
 
     public static Builder getBuilder() {
@@ -35,11 +25,12 @@ public class Person {
         private Builder() {
         }
 
+        @SuppressWarnings("unused")
         public Builder copyPerson(Person person) {
             setPersonId(person.personId);
-            setSurname(person.surname);
-            setName(person.name);
-            setPatronymic(person.patronymic);
+            person.surname.ifPresent(this::setSurname);
+            person.name.ifPresent(this::setName);
+            person.patronymic.ifPresent(this::setPatronymic);
             return this;
         }
 
@@ -49,17 +40,17 @@ public class Person {
         }
 
         public Builder setSurname(String surname) {
-            Person.this.surname = surname;
+            Person.this.surname = Optional.ofNullable(surname);
             return this;
         }
 
         public Builder setName(String name) {
-            Person.this.name = name;
+            Person.this.name = Optional.ofNullable(name);
             return this;
         }
 
         public Builder setPatronymic(String patronymic) {
-            Person.this.patronymic = patronymic;
+            Person.this.patronymic = Optional.ofNullable(patronymic);
             return this;
         }
 

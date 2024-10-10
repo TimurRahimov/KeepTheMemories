@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import ru.keepthememories.api.requests.AddPersonRequest;
 import ru.keepthememories.api.requests.GetPersonRequest;
+import ru.keepthememories.api.requests.UpdatePersonRequest;
 import ru.keepthememories.api.responses.AddPersonResponse;
 import ru.keepthememories.api.responses.GetPersonResponse;
 import ru.keepthememories.domain.models.Person;
@@ -47,6 +48,17 @@ public class PersonController {
                 limit.isEmpty() ? personService.getAll() :
                         offset.isEmpty() ? personService.get(limit.get(), 0L) :
                                 personService.get(limit.get(), offset.get()));
+    }
+
+    @PutMapping
+    public void update(UpdatePersonRequest request) {
+        Person.Builder personBuilder = Person.getBuilder();
+        personBuilder.setPersonId(request.id());
+        request.surname().ifPresent(personBuilder::setSurname);
+        request.name().ifPresent(personBuilder::setName);
+        request.patronymic().ifPresent(personBuilder::setPatronymic);
+
+        personService.update(request.id(), personBuilder.build());
     }
 
 }
