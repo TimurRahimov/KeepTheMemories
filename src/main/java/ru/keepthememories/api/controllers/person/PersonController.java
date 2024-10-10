@@ -1,4 +1,4 @@
-package ru.keepthememories.api.controllers;
+package ru.keepthememories.api.controllers.person;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,8 +6,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-import ru.keepthememories.api.requests.*;
-import ru.keepthememories.api.responses.*;
+import ru.keepthememories.api.controllers.person.requests.AddPersonRequest;
+import ru.keepthememories.api.controllers.person.requests.DeletePersonRequest;
+import ru.keepthememories.api.controllers.person.requests.GetPersonRequest;
+import ru.keepthememories.api.controllers.person.requests.UpdatePersonRequest;
+import ru.keepthememories.api.controllers.person.responses.AddPersonResponse;
+import ru.keepthememories.api.controllers.person.responses.GetPersonResponse;
+import ru.keepthememories.api.handlers.QueryHandler;
 import ru.keepthememories.domain.models.Person;
 import ru.keepthememories.services.PersonService;
 
@@ -29,7 +34,8 @@ public class PersonController {
         Person addedPerson = personService.add(
                 request.surname(),
                 request.name(),
-                request.patronymic()
+                request.patronymic(),
+                request.sex()
         );
 
         return new AddPersonResponse(addedPerson.getPersonId());
@@ -37,14 +43,11 @@ public class PersonController {
 
     @GetMapping
     public GetPersonResponse get(GetPersonRequest request) {
+        Optional<Integer> id = request.id();
         Optional<Long> limit = request.limit();
         Optional<Long> offset = request.offset();
-        Optional<Integer> personId = request.personId();
 
-        return new GetPersonResponse(personId.isPresent() ? personService.get(personId.get()) :
-                limit.isEmpty() ? personService.getAll() :
-                        offset.isEmpty() ? personService.get(limit.get(), 0L) :
-                                personService.get(limit.get(), offset.get()));
+        return new GetPersonResponse(QueryHandler.query(this.personService, id, limit, offset));
     }
 
     @DeleteMapping
@@ -55,13 +58,15 @@ public class PersonController {
 
     @PutMapping
     public void update(UpdatePersonRequest request) {
-        Person.Builder personBuilder = Person.getBuilder();
-        personBuilder.setPersonId(request.id());
-        request.surname().ifPresent(personBuilder::setSurname);
-        request.name().ifPresent(personBuilder::setName);
-        request.patronymic().ifPresent(personBuilder::setPatronymic);
-
-        personService.update(request.id(), personBuilder.build());
+        personService.update(request.id(),
+                Person.builder()
+                        .personId(request.id())
+                        .surname(request.surname())
+                        .name(request.name())
+                        .patronymic(request.patronymic())
+                        .sex(request.sex().orElse(null))
+                        .build()
+        );
     }
 
 }
