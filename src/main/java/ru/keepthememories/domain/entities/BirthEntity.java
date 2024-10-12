@@ -1,19 +1,19 @@
-package ru.keepthememories.dao.entities;
+package ru.keepthememories.domain.entities;
 
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Optional;
 
-@Builder
+@Builder(builderClassName = "Builder")
 @Getter
 public class BirthEntity {
 
     private Integer personId;
     private String date;
-    @Builder.Default
+    @lombok.Builder.Default
     private Optional<Integer> biologicalMotherId = Optional.empty();
-    @Builder.Default
+    @lombok.Builder.Default
     private Optional<Integer> biologicalFatherId = Optional.empty();
 
 }

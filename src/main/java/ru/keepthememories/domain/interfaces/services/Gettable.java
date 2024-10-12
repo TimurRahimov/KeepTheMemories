@@ -1,4 +1,4 @@
-package ru.keepthememories.services.interfaces;
+package ru.keepthememories.domain.interfaces.services;
 
 import java.util.List;
 import java.util.Optional;

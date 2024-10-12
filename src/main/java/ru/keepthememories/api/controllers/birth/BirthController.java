@@ -1,14 +1,11 @@
 package ru.keepthememories.api.controllers.birth;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.keepthememories.api.controllers.birth.requests.AddBirthRequest;
-import ru.keepthememories.api.controllers.birth.requests.GetBirthRequest;
-import ru.keepthememories.api.controllers.birth.responses.AddBirthResponse;
-import ru.keepthememories.api.controllers.birth.responses.GetBirthResponse;
+import org.springframework.web.bind.annotation.*;
+import ru.keepthememories.api.controllers.birth.requests.*;
+import ru.keepthememories.api.controllers.birth.responses.*;
 import ru.keepthememories.api.handlers.QueryHandler;
+import ru.keepthememories.api.mappers.UpdateBirthRequestMapper;
+import ru.keepthememories.api.requests.DefaultQueryRequest;
 import ru.keepthememories.services.BirthService;
 
 @RestController
@@ -16,26 +13,31 @@ import ru.keepthememories.services.BirthService;
 public class BirthController {
 
     private final BirthService birthService;
+    private final UpdateBirthRequestMapper updateMapper;
 
-    BirthController(BirthService birthService) {
+    BirthController(BirthService birthService,
+                    UpdateBirthRequestMapper updateMapper) {
         this.birthService = birthService;
+        this.updateMapper = updateMapper;
     }
 
     @PostMapping
-    public AddBirthResponse add(AddBirthRequest request) {
-        return new AddBirthResponse(birthService.add(request.personId(),
+    public AddBirthResponse add(@RequestBody AddBirthRequest request) {
+        return new AddBirthResponse(birthService.add(
+                request.id(),
                 request.date(),
                 request.biologicalMotherId(),
                 request.biologicalFatherId()));
     }
 
     @GetMapping
-    public GetBirthResponse get(GetBirthRequest request) {
-        return new GetBirthResponse(QueryHandler.query(
-                this.birthService,
-                request.id(),
-                request.limit(),
-                request.offset()));
+    public GetBirthResponse get(DefaultQueryRequest request) {
+        return new GetBirthResponse(QueryHandler.query(birthService, request));
+    }
+
+    @PutMapping
+    public void update(UpdateBirthRequest request) {
+        birthService.update(request.id(), updateMapper.toDto(request));
     }
 
 }

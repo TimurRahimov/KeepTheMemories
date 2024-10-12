@@ -1,15 +1,14 @@
-package ru.keepthememories.mappers;
+package ru.keepthememories.domain.mappers;
 
 import org.springframework.stereotype.Component;
-import ru.keepthememories.dao.entities.BirthEntity;
+import ru.keepthememories.domain.entities.BirthEntity;
 import ru.keepthememories.domain.models.Birth;
 import ru.keepthememories.domain.models.Person;
-import ru.keepthememories.mappers.interfaces.AbstractDomainMapper;
+import ru.keepthememories.domain.interfaces.mappers.AbstractDomainMapper;
 import ru.keepthememories.services.PersonService;
+import ru.keepthememories.util.CalendarFormatter;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Optional;
 
 @Component
@@ -26,7 +25,7 @@ public class BirthMapper implements AbstractDomainMapper<Birth, BirthEntity> {
     public BirthEntity toEntity(Birth model) {
         return BirthEntity.builder()
                 .personId(model.getPerson().getPersonId())
-                .date(format.format(model.getDate()))
+                .date(CalendarFormatter.format(model.getDate()))
                 .biologicalMotherId(model.getBiologicalMother().map(Person::getPersonId))
                 .biologicalFatherId(model.getBiologicalFather().map(Person::getPersonId))
                 .build();
@@ -34,30 +33,24 @@ public class BirthMapper implements AbstractDomainMapper<Birth, BirthEntity> {
 
     @Override
     public Birth toDto(BirthEntity birthEntity) {
-        Birth.Builder builder = Birth.getBuilder();
+        Birth.BirthBuilder builder = Birth.builder();
 
         Optional<Person> person = personService.getById(birthEntity.getPersonId());
         if (person.isEmpty())
             throw new RuntimeException("Не удалось найти Person с заданным id");
-        builder.setPerson(person.get());
+        builder.person(person.get());
 
-        try {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(format.parse(birthEntity.getDate()));
-            builder.setDate(calendar);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        builder.date(CalendarFormatter.parse(birthEntity.getDate()));
 
         if (birthEntity.getBiologicalMotherId().isPresent()) {
             Optional<Person> biologicalMother = personService.getById(birthEntity.getBiologicalMotherId().get());
             if (biologicalMother.isPresent())
-                builder.setBiologicalMother(biologicalMother);
+                builder.biologicalMother(biologicalMother);
         }
         if (birthEntity.getBiologicalFatherId().isPresent()) {
             Optional<Person> biologicalFather = personService.getById(birthEntity.getBiologicalFatherId().get());
             if (biologicalFather.isPresent())
-                builder.setBiologicalFather(biologicalFather);
+                builder.biologicalFather(biologicalFather);
         }
 
         return builder.build();

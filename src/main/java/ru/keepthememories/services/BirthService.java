@@ -1,33 +1,27 @@
 package ru.keepthememories.services;
 
 import org.springframework.stereotype.Component;
-import ru.keepthememories.dao.BirthEntityDao;
-import ru.keepthememories.dao.entities.BirthEntity;
+import ru.keepthememories.domain.entities.BirthEntity;
+import ru.keepthememories.domain.interfaces.dao.AbstractDao;
 import ru.keepthememories.domain.models.Birth;
-import ru.keepthememories.mappers.BirthMapper;
-import ru.keepthememories.services.interfaces.Gettable;
-import ru.keepthememories.services.interfaces.Updatable;
+import ru.keepthememories.domain.mappers.BirthMapper;
+import ru.keepthememories.domain.interfaces.services.Deletable;
+import ru.keepthememories.domain.interfaces.services.Gettable;
+import ru.keepthememories.domain.interfaces.services.Updatable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Component
-public class BirthService implements Gettable<Birth>, Updatable<Birth> {
+public class BirthService implements Deletable<Birth>, Gettable<Birth>, Updatable<Birth> {
 
-    private final BirthEntityDao dao;
+    private final AbstractDao<BirthEntity> dao;
     private final BirthMapper birthMapper;
 
-    BirthService(BirthEntityDao dao,
+    BirthService(AbstractDao<BirthEntity> dao,
                  BirthMapper birthMapper) {
         this.dao = dao;
         this.birthMapper = birthMapper;
-    }
-
-    public Birth add(Integer personId, String date) {
-        BirthEntity birthEntity = BirthEntity.builder().personId(personId).date(date).build();
-        dao.add(birthEntity);
-        return birthMapper.toDto(birthEntity);
     }
 
     public Birth add(Integer personId, String date,
@@ -41,6 +35,11 @@ public class BirthService implements Gettable<Birth>, Updatable<Birth> {
                 .build();
         dao.add(birthEntity);
         return birthMapper.toDto(birthEntity);
+    }
+
+    @Override
+    public void delete(Integer personId) {
+        dao.delete(personId);
     }
 
     @Override

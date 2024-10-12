@@ -1,7 +1,7 @@
-package ru.keepthememories.mappers;
+package ru.keepthememories.domain.mappers;
 
 import org.springframework.stereotype.Component;
-import ru.keepthememories.dao.entities.PersonEntity;
+import ru.keepthememories.domain.entities.PersonEntity;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

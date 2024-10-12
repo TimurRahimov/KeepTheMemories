@@ -1,4 +1,4 @@
-package ru.keepthememories.dao.interfaces;
+package ru.keepthememories.domain.interfaces.dao;
 
 import java.util.List;
 import java.util.Optional;

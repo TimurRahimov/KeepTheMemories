@@ -1,9 +1,9 @@
-package ru.keepthememories.mappers;
+package ru.keepthememories.domain.mappers;
 
 import org.springframework.stereotype.Component;
-import ru.keepthememories.dao.entities.PersonEntity;
+import ru.keepthememories.domain.entities.PersonEntity;
 import ru.keepthememories.domain.models.Person;
-import ru.keepthememories.mappers.interfaces.AbstractDomainMapper;
+import ru.keepthememories.domain.interfaces.mappers.AbstractDomainMapper;
 
 import java.util.Optional;
 

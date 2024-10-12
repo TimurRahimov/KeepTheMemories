@@ -3,12 +3,10 @@ package ru.keepthememories.api.controllers.person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
-
 import ru.keepthememories.api.controllers.person.requests.*;
 import ru.keepthememories.api.controllers.person.responses.*;
 import ru.keepthememories.api.handlers.QueryHandler;
+import ru.keepthememories.api.requests.DefaultQueryRequest;
 import ru.keepthememories.domain.models.Person;
 import ru.keepthememories.services.PersonService;
 
@@ -38,12 +36,8 @@ public class PersonController {
     }
 
     @GetMapping
-    public GetPersonResponse get(GetPersonRequest request) {
-        Optional<Integer> id = request.id();
-        Optional<Long> limit = request.limit();
-        Optional<Long> offset = request.offset();
-
-        return new GetPersonResponse(QueryHandler.query(this.personService, id, limit, offset));
+    public GetPersonResponse get(DefaultQueryRequest request) {
+        return new GetPersonResponse(QueryHandler.query(this.personService, request));
     }
 
     @DeleteMapping

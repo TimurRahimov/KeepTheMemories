@@ -1,4 +1,4 @@
-package ru.keepthememories.services.interfaces;
+package ru.keepthememories.domain.interfaces.services;
 
 public interface Updatable<T> {
 

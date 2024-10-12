@@ -3,8 +3,8 @@ package ru.keepthememories.dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import ru.keepthememories.dao.entities.BirthEntity;
-import ru.keepthememories.dao.interfaces.AbstractDao;
+import ru.keepthememories.domain.entities.BirthEntity;
+import ru.keepthememories.domain.interfaces.dao.AbstractDao;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class BirthEntityDao implements AbstractDao<BirthEntity> {
         String sql = "UPDATE Birth " +
                 "SET " +
                 "date = IFNULL(?, date), " +
-                "biological_mother = IFNULL(?, biological_mother) " +
+                "biological_mother = IFNULL(?, biological_mother), " +
                 "biological_father = IFNULL(?, biological_father) " +
                 "WHERE person_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -109,7 +109,7 @@ public class BirthEntityDao implements AbstractDao<BirthEntity> {
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                BirthEntity.BirthEntityBuilder builder = BirthEntity.builder();
+                BirthEntity.Builder builder = BirthEntity.builder();
                 builder.personId(rs.getInt("person_id"));
                 builder.date(rs.getString("date"));
                 int biologicalMotherId = rs.getInt("biological_mother");
@@ -133,7 +133,7 @@ public class BirthEntityDao implements AbstractDao<BirthEntity> {
             ResultSet rs = statement.executeQuery();
             List<BirthEntity> resultList = new ArrayList<>();
             while (rs.next()) {
-                BirthEntity.BirthEntityBuilder builder = BirthEntity.builder();
+                BirthEntity.Builder builder = BirthEntity.builder();
                 builder.personId(rs.getInt("person_id"));
                 builder.date(rs.getString("date"));
                 int biologicalMotherId = rs.getInt("biological_mother");

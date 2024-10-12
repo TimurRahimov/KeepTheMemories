@@ -1,4 +1,4 @@
-package ru.keepthememories.mappers.interfaces;
+package ru.keepthememories.domain.interfaces.mappers;
 
 import java.util.Optional;
 

@@ -1,31 +1,32 @@
-package ru.keepthememories.dao.entities;
+package ru.keepthememories.domain.entities;
 
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Optional;
 
-@Builder
+@Builder(builderClassName = "Builder")
 @Getter
 public class PersonEntity {
 
     private Integer personId;
     private String sex;
-    @Builder.Default
+    @lombok.Builder.Default
     private Optional<String> surname = Optional.empty();
-    @Builder.Default
+    @lombok.Builder.Default
     private Optional<String> name = Optional.empty();
-    @Builder.Default
+    @lombok.Builder.Default
     private Optional<String> patronymic = Optional.empty();
 
     @Override
     public String toString() {
         return "PersonEntity{" +
-                "personId=" + personId +
+                "id=" + personId +
                 ", sex='" + sex + '\'' +
                 ", surname=" + surname +
                 ", name=" + name +
                 ", patronymic=" + patronymic +
                 '}';
     }
+
 }

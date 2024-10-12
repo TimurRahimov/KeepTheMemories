@@ -3,9 +3,9 @@ package ru.keepthememories.dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import ru.keepthememories.dao.entities.PersonEntity;
-import ru.keepthememories.dao.interfaces.AbstractDao;
-import ru.keepthememories.mappers.ResultSetMapper;
+import ru.keepthememories.domain.entities.PersonEntity;
+import ru.keepthememories.domain.interfaces.dao.AbstractDao;
+import ru.keepthememories.domain.mappers.ResultSetMapper;
 
 import java.sql.*;
 import java.util.*;
