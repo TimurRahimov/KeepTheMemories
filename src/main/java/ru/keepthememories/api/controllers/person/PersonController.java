@@ -6,12 +6,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-import ru.keepthememories.api.controllers.person.requests.AddPersonRequest;
-import ru.keepthememories.api.controllers.person.requests.DeletePersonRequest;
-import ru.keepthememories.api.controllers.person.requests.GetPersonRequest;
-import ru.keepthememories.api.controllers.person.requests.UpdatePersonRequest;
-import ru.keepthememories.api.controllers.person.responses.AddPersonResponse;
-import ru.keepthememories.api.controllers.person.responses.GetPersonResponse;
+import ru.keepthememories.api.controllers.person.requests.*;
+import ru.keepthememories.api.controllers.person.responses.*;
 import ru.keepthememories.api.handlers.QueryHandler;
 import ru.keepthememories.domain.models.Person;
 import ru.keepthememories.services.PersonService;

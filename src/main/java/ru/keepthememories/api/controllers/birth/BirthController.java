@@ -11,8 +11,6 @@ import ru.keepthememories.api.controllers.birth.responses.GetBirthResponse;
 import ru.keepthememories.api.handlers.QueryHandler;
 import ru.keepthememories.services.BirthService;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/birth")
 public class BirthController {
@@ -33,11 +31,11 @@ public class BirthController {
 
     @GetMapping
     public GetBirthResponse get(GetBirthRequest request) {
-        Optional<Integer> id = request.id();
-        Optional<Long> limit = request.limit();
-        Optional<Long> offset = request.offset();
-
-        return new GetBirthResponse(QueryHandler.query(this.birthService, id, limit, offset));
+        return new GetBirthResponse(QueryHandler.query(
+                this.birthService,
+                request.id(),
+                request.limit(),
+                request.offset()));
     }
 
 }
