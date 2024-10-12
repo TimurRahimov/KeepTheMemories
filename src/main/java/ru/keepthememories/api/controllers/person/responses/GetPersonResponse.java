@@ -1,4 +1,4 @@
-package ru.keepthememories.api.responses;
+package ru.keepthememories.api.controllers.person.responses;
 
 import ru.keepthememories.domain.models.Person;
 

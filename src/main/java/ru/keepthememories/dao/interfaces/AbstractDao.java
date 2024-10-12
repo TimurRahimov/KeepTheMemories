@@ -12,22 +12,7 @@ public interface AbstractDao<T> {
 
     void delete(Integer id);
 
-    /**
-     * Обновляет только по доступным полям item
-     *
-     * @param id индектификатор сущности
-     * @param item сущность
-     */
     void update(Integer id, T item);
-
-    /**
-     * Принудительно обновляет по всем прописанным поям в item (в том числе и null)
-     *
-     * @param id индектификатор сущности
-     * @param item сущность
-     */
-    @SuppressWarnings("unused")
-    void fullUpdate(Integer id, T item);
 
     Optional<T> getById(Integer id);
 
